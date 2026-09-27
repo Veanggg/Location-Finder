@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location Finder</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef4ff;
+            text-align: center;
+            margin: 0;
+        }
+
+        .container {
+            width: 400px;
+            margin: 80px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px #cccccc;
+        }
+
+        h1 {
+            color: #2d5fa8;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            border: 1px solid #aaa;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #2d5fa8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #214a82;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #message {
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Location Finder</h1>
+
+        <p>Search for a place or location</p>
+
+        <input
+            type="text"
+            id="locationInput"
+            placeholder="Example: Lian, Batangas"
+        >
+
+        <br>
+
+        <button onclick="findLocation()">Search</button>
+
+        <div class="result">
+            <p id="place"></p>
+            <p id="latitude"></p>
+            <p id="longitude"></p>
+            <p id="message"></p>
+        </div>
+    </div>
+
+    <script>
+        function findLocation() {
+
+            const location =
+                document.getElementById("locationInput").value.trim();
+
+            const message =
+                document.getElementById("message");
+
+            if (location == "") {
+                message.innerHTML = "Please enter a place.";
+                return;
+            }
+
+            message.innerHTML = "Searching...";
+
+            const url =
+                "https://nominatim.openstreetmap.org/search" +
+                "?format=jsonv2" +
+                "&q=" + encodeURIComponent(location) +
+                "&limit=1";
+
+            fetch(url)
+                .then(function(response) {
+                    return response.json();
+                })
+
+                .then(function(data) {
+
+                    if (data.length > 0) {
+
+                        const result = data[0];
+
+                        document.getElementById("place").innerHTML =
+                            "<b>Place:</b> " + result.display_name;
+
+                        document.getElementById("latitude").innerHTML =
+                            "<b>Latitude:</b> " + result.lat;
+
+                        document.getElementById("longitude").innerHTML =
+                            "<b>Longitude:</b> " + result.lon;
+
+                        message.innerHTML =
+                            "Location found!";
+
+                    } else {
+
+                        document.getElementById("place").innerHTML = "";
+                        document.getElementById("latitude").innerHTML = "";
+                        document.getElementById("longitude").innerHTML = "";
+
+                        message.innerHTML =
+                            "Location not found.";
+                    }
+                })
+
+                .catch(function(error) {
+                    message.innerHTML =
+                        "Unable to search location.";
+                });
+        }
+    </script>
+
+</body>
+</html>
